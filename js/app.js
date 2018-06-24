@@ -4,6 +4,9 @@ focusInput[0].focus();
 
 const jobItem = document.querySelector('#title');
 const fieldset = document.querySelector('fieldset');
+// Display other text field if Javascript
+const other = document.getElementById('other');
+other.style.display = "none";
 
 // Listen to changed item on Job Role dropdown
 jobItem.addEventListener("change", () => {
@@ -63,7 +66,7 @@ shirtDesign.addEventListener('change', () => {
 const checkboxItem = document.querySelectorAll(`input[type="checkbox"]`);
 const activities = document.querySelector(`.activities`);
 
-activities.addEventListener("change", e => {
+activities.addEventListener("change", () => {
     if (checkboxItem[1].checked) {
         checkboxItem[3].parentElement.style.color = 'rgba(0,0,0,.2)';
         checkboxItem[3].disabled = true;
@@ -158,20 +161,27 @@ paymentDropdown.addEventListener("change", () => {
 })
 
 /* ====== Form Submit ====== */
-const formSubmit = document.querySelector('button[type="submit"]');
+const formSubmitButton = document.querySelector('button[type="submit"]');
 const nameInput = document.getElementById('name');
 const nameInputTitle = document.querySelector('label[for="name"]');
 const emailInput = document.getElementById('mail');
 const emailTitle = document.querySelector('label[for="mail"]');
+const activityErrorDiv = document.createElement('div');
+const activityError = document.createElement('h3');
+const activityLegend = document.querySelector('label[name="npm"]');
+const ccInput = document.getElementById(`cc-num`);
+const zipInput = document.getElementById(`zip`);
+const cvvInput = document.getElementById(`cvv`);
 
-formSubmit.addEventListener("click", e => {
+formSubmitButton.addEventListener("click", e => {
     // If name field is empty, trigger error message
-    if(nameInput.value == '') {
+    if(nameInput.value == '' || nameInput.value !== `^[a-zA-Z ]{2,30}$`) {
         nameInput.style.borderColor = "rgb(195, 17, 50)";
         nameInputTitle.innerHTML = "Name: (please provide your name)";
         nameInputTitle.style.color = "rgb(195, 17, 50)"; 
         nameInputTitle.style.fontWeight = "bold"; 
-        console.log('No name');
+        console.log('Name invalid');
+        nameInput.focus();
         e.preventDefault();
     }
     else if (nameInput.value !== '') {
@@ -182,7 +192,7 @@ formSubmit.addEventListener("click", e => {
     }
     // If email is incorrect format or empty, trigger error message
     function validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        var re = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
         return re.test(email);
     }
       
@@ -190,17 +200,51 @@ formSubmit.addEventListener("click", e => {
         emailInput.style.borderColor = "rgb(195, 17, 50)";
         emailTitle.innerHTML = "Email: (please provide a valid email address)";
         emailTitle.style.color = "rgb(195, 17, 50)"; 
-        emailTitle.style.fontWeight = "bold"; 
+        emailTitle.style.fontWeight = "bold";
+        console.log('Email invalid');
+        emailInput.focus(); 
         e.preventDefault();
     }
     else if (validateEmail(email)) {
         emailInput.style.borderColor = "";
-        emailTitle.innerHTML = "Name:";
+        emailTitle.innerHTML = "Email:";
         emailTitle.style.color = ""; 
         emailTitle.style.fontWeight = ""; 
     }
-    return false;
+    // If at least 1 Activities checkbox isn't selected, trigger error
+        
+    if (checkboxItem.checked == true) {
+        console.log('Checkbox valid');
+        activityErrorDiv.remove();
+    }
+    else if (checkboxItem.checked == false) {
+        console.log('Checkbox invalid');
+        activityError.innerHTML = "Select at least 1 activity to continue";
+        activityError.style.color = "rgb(195, 17, 50)"; 
+        activityError.style.fontWeight = "bold";
+        activityErrorDiv.appendChild(activityError);
+        activities.appendChild(activityErrorDiv);
+        e.preventDefault();
+    }
+    // Credit Card validation - Credit Card number, a Zip Code, and a 3 number CVV    
+    const ccre =  "^([0-9]{13,16})$";
+    
+    if (ccre.test(ccInput.value)) {
+        console.log('cc valid');
+    } else if (ccre.test(ccInput.value)) {
+        ccInput.style.borderColor = 'red';
+        console.log('cc invalid');
+    }
+    if (zipInput.value == "^([0-9]{5})$") {
+        console.log('zip valid');
+    } else if (zipInput.value !== "^([0-9]{5})$") {
+        zipInput.style.borderColor = 'red';
+        console.log('zip invalid');
+    }
+    if (cvvInput.pattern == "^([0-9]{5})$") {
+        console.log('cvv valid');
+    } else if (cvvInput.pattern !== "^([0-9]{5})$") {
+        cvvInput.style.borderColor = 'red';
+        console.log('cvv invalid');
+    }
 })
-
-
-  
