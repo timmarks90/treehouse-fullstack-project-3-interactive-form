@@ -60,45 +60,47 @@ shirtDesign.addEventListener('change', () => {
     }
 })
 
-/* ====== Activities Registration ====== */
+/* ========================
+Activities Registration
+======================== */
 // Some events are at the same day and time as others. If the user selects a workshop, don't allow selection of a workshop at the same day and time -- you should disable the checkbox and visually indicate that the workshop in the competing time slot isn't available.
 // When a user unchecks an activity, make sure that competing activities (if there are any) are no longer disabled.
-const checkboxItem = document.querySelectorAll(`input[type="checkbox"]`);
 const activities = document.querySelector(`.activities`);
+const checkbox = activities.querySelectorAll(`input[type="checkbox"]`);
 
 activities.addEventListener("change", () => {
-    if (checkboxItem[1].checked) {
-        checkboxItem[3].parentElement.style.color = 'rgba(0,0,0,.2)';
-        checkboxItem[3].disabled = true;
+    if (checkbox[1].checked) {
+        checkbox[3].parentNode.style.color = 'rgba(0,0,0,.2)';
+        checkbox[3].disabled = true;
     }
     
     else {
-        checkboxItem[3].disabled = false;
-        checkboxItem[3].parentElement.style.color = 'rgba(0,0,0,1)';
+        checkbox[3].disabled = false;
+        checkbox[3].parentNode.style.color = 'rgba(0,0,0,1)';
     }
-    if (checkboxItem[3].checked) {
-        checkboxItem[1].parentElement.style.color = 'rgba(0,0,0,.2)';
-        checkboxItem[1].disabled = true;
-    }
-    else {
-        checkboxItem[1].disabled = false;
-        checkboxItem[1].parentElement.style.color = 'rgba(0,0,0,1)';
-    }
-    if (checkboxItem[2].checked) {
-        checkboxItem[4].parentElement.style.color = 'rgba(0,0,0,.2)';
-        checkboxItem[4].disabled = true;
+    if (checkbox[3].checked) {
+        checkbox[1].parentNode.style.color = 'rgba(0,0,0,.2)';
+        checkbox[1].disabled = true;
     }
     else {
-        checkboxItem[4].disabled = false;
-        checkboxItem[4].parentElement.style.color = 'rgba(0,0,0,1)';
+        checkbox[1].disabled = false;
+        checkbox[1].parentNode.style.color = 'rgba(0,0,0,1)';
     }
-    if (checkboxItem[4].checked) {
-        checkboxItem[2].parentElement.style.color = 'rgba(0,0,0,.2)';
-        checkboxItem[2].disabled = true;
+    if (checkbox[2].checked) {
+        checkbox[4].parentNode.style.color = 'rgba(0,0,0,.2)';
+        checkbox[4].disabled = true;
     }
     else {
-        checkboxItem[2].disabled = false;
-        checkboxItem[2].parentElement.style.color = 'rgba(0,0,0,1)';
+        checkbox[4].disabled = false;
+        checkbox[4].parentNode.style.color = 'rgba(0,0,0,1)';
+    }
+    if (checkbox[4].checked) {
+        checkbox[2].parentNode.style.color = 'rgba(0,0,0,.2)';
+        checkbox[2].disabled = true;
+    }
+    else {
+        checkbox[2].disabled = false;
+        checkbox[2].parentNode.style.color = 'rgba(0,0,0,1)';
     }
 })
 
@@ -127,7 +129,9 @@ activities.addEventListener("change", e => {
     activitiesCost.textContent = "Total: $" + totalCost;
 })
 
-/* ====== Payment Info ====== */
+/* ========================
+Payment Info 
+======================== */
 const paymentDropdown = document.getElementById('payment');
 const paypal = document.getElementById('paypal');
 const bitcoin = document.getElementById('bitcoin');
@@ -160,7 +164,9 @@ paymentDropdown.addEventListener("change", () => {
     }
 })
 
-/* ====== Form Submit ====== */
+/* ========================
+Form Submit 
+======================== */
 const formSubmitButton = document.querySelector('button[type="submit"]');
 const nameInput = document.getElementById('name');
 const nameInputTitle = document.querySelector('label[for="name"]');
@@ -168,14 +174,37 @@ const emailInput = document.getElementById('mail');
 const emailTitle = document.querySelector('label[for="mail"]');
 const activityErrorDiv = document.createElement('div');
 const activityError = document.createElement('h3');
+const activityTitle = document.querySelector('.activities.legend')
 const activityLegend = document.querySelector('label[name="npm"]');
 const ccInput = document.getElementById(`cc-num`);
 const zipInput = document.getElementById(`zip`);
 const cvvInput = document.getElementById(`cvv`);
 
+function validateEmail(email) {
+    let emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailReg.test(email);
+}
+
+function validateCheckbox() {
+    for (let i = 0; i < checkbox.length; i++) {
+        if (checkbox[i].checked = true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
+// activityError.innerHTML = "Please select an Activity";
+//             activityError.style.color = "rgb(195, 17, 50)"; 
+//             activityError.style.fontWeight = "bold";
+//             activityErrorDiv.appendChild(activityError);
+//             activities.appendChild(activityTitle);
+//             e.preventDefault();
+
 formSubmitButton.addEventListener("click", e => {
-    // If name field is empty, trigger error message
-    if(nameInput.value == '' || nameInput.value !== `^[a-zA-Z ]{2,30}$`) {
+    // If name field is empty or incorrect format, trigger error message
+    if(nameInput.value == '' || /^[0-9]/.test(nameInput.value)) {
         nameInput.style.borderColor = "rgb(195, 17, 50)";
         nameInputTitle.innerHTML = "Name: (please provide your name)";
         nameInputTitle.style.color = "rgb(195, 17, 50)"; 
@@ -191,11 +220,6 @@ formSubmitButton.addEventListener("click", e => {
         nameInputTitle.style.fontWeight = ""; 
     }
     // If email is incorrect format or empty, trigger error message
-    function validateEmail(email) {
-        var re = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$";
-        return re.test(email);
-    }
-      
     if(emailInput.value == '') {
         emailInput.style.borderColor = "rgb(195, 17, 50)";
         emailTitle.innerHTML = "Email: (please provide a valid email address)";
@@ -205,46 +229,50 @@ formSubmitButton.addEventListener("click", e => {
         emailInput.focus(); 
         e.preventDefault();
     }
-    else if (validateEmail(email)) {
+    else if (validateEmail(emailInput.value)) {
         emailInput.style.borderColor = "";
         emailTitle.innerHTML = "Email:";
         emailTitle.style.color = ""; 
-        emailTitle.style.fontWeight = ""; 
+        emailTitle.style.fontWeight = "";
+        console.log('Email valid'); 
     }
     // If at least 1 Activities checkbox isn't selected, trigger error
-        
-    if (checkboxItem.checked == true) {
-        console.log('Checkbox valid');
-        activityErrorDiv.remove();
+    const isChecked = e.target.checked;
+    const checkboxList = activities.children;
+    if (isChecked) {
+        for (let i = 0; i < checkboxList.length; i+= 1) {
+            if (checkboxList[i].checked = true) {
+                return true;
+            }
+            else if (checkboxList[i].checked = false) {
+                activityError.innerHTML = "Please select an Activity";
+                activityError.style.color = "rgb(195, 17, 50)"; 
+                activityError.style.fontWeight = "bold";
+                 activityErrorDiv.appendChild(activityError);
+                activities.appendChild(activityTitle);
+                e.preventDefault();
+                return false;
+            }
+        }
     }
-    else if (checkboxItem.checked == false) {
-        console.log('Checkbox invalid');
-        activityError.innerHTML = "Select at least 1 activity to continue";
-        activityError.style.color = "rgb(195, 17, 50)"; 
-        activityError.style.fontWeight = "bold";
-        activityErrorDiv.appendChild(activityError);
-        activities.appendChild(activityErrorDiv);
-        e.preventDefault();
-    }
-    // Credit Card validation - Credit Card number, a Zip Code, and a 3 number CVV    
-    const ccre =  "^([0-9]{13,16})$";
-    
-    if (ccre.test(ccInput.value)) {
+    // Credit Card validation - Credit Card number, a Zip Code, and a 3 number CVV        
+    const validateCreditCard = "^([0-9]{13,16})$"
+    if (ccInput.value = validateCreditCard) {
         console.log('cc valid');
-    } else if (ccre.test(ccInput.value)) {
-        ccInput.style.borderColor = 'red';
-        console.log('cc invalid');
-    }
-    if (zipInput.value == "^([0-9]{5})$") {
-        console.log('zip valid');
-    } else if (zipInput.value !== "^([0-9]{5})$") {
-        zipInput.style.borderColor = 'red';
-        console.log('zip invalid');
-    }
-    if (cvvInput.pattern == "^([0-9]{5})$") {
-        console.log('cvv valid');
-    } else if (cvvInput.pattern !== "^([0-9]{5})$") {
-        cvvInput.style.borderColor = 'red';
-        console.log('cvv invalid');
+//     } else if (ccre.test(ccInput.value)) {
+//         ccInput.style.borderColor = 'red';
+//         console.log('cc invalid');
+//     }
+//     if (zipInput.value == "^([0-9]{5})$") {
+//         console.log('zip valid');
+//     } else {
+//         zipInput.style.borderColor = 'red';
+//         console.log('zip invalid');
+//     }
+//     if (cvvInput.pattern == "^([0-9]{5})$") {
+//         console.log('cvv valid');
+//     } else if (cvvInput.pattern !== "^([0-9]{5})$") {
+//         cvvInput.style.borderColor = 'red';
+//         console.log('cvv invalid');
     }
 })
