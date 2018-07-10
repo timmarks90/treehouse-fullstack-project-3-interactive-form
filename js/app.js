@@ -4,7 +4,7 @@ focusInput[0].focus();
 
 const jobItem = document.querySelector('#title');
 const fieldset = document.querySelector('fieldset');
-// Display other text field if Javascript
+// Display other text field if Javascript is disabled
 const other = document.getElementById('other');
 other.style.display = "none";
 
@@ -40,6 +40,10 @@ const shirtColor = document.querySelector('#color');
 const colorPuns = document.querySelector(`optgroup[label=color-puns]`);
 const colorHeart = document.querySelector(`optgroup[label=color-heart]`);
 
+// Hide shirt color label until t-shirt design theme is selected
+const shirtColorDiv = document.getElementById('colors-js-puns');
+shirtColorDiv.style.display = "none";
+
 shirtDesign.addEventListener('change', () => {
     // If the user selects "Theme - JS Puns" then the color menu should only display "Cornflower Blue," "Dark Slate Grey," and "Gold."
     if(shirtDesign.options[shirtDesign.selectedIndex].value === "Select Theme") {
@@ -51,12 +55,14 @@ shirtDesign.addEventListener('change', () => {
         console.log('Started puns');
         shirtColor.appendChild(colorPuns);
         shirtColor.removeChild(colorHeart);
+        shirtColorDiv.style.display = "block";
     } 
     // If the user selects "Theme - I ♥ JS" then the color menu should only display "Tomato," "Steel Blue," and "Dim Grey."
     else if (shirtDesign.options[shirtDesign.selectedIndex].value === "heart js") {
         console.log('Started heart');
         shirtColor.appendChild(colorHeart);
         shirtColor.removeChild(colorPuns);
+        shirtColorDiv.style.display = "block";
     }
 })
 
@@ -177,11 +183,14 @@ const activityError = document.createElement('h3');
 const activityTitle = document.querySelector('.activities.legend')
 const activityLegend = document.querySelector('label[name="npm"]');
 const ccInput = document.getElementById(`cc-num`);
+const ccTitle = document.querySelector('label[for="cc-num"]');
 const zipInput = document.getElementById(`zip`);
+const zipTitle = document.querySelector('label[for="zip"]');
 const cvvInput = document.getElementById(`cvv`);
+const cvvTitle = document.querySelector('label[for="cvv"]');
 
 function validateEmail(email) {
-    let emailReg = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailReg = /^([A-Za-z0-9_\-.+])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,})$/;
     return emailReg.test(email);
 }
 
@@ -195,13 +204,6 @@ function validateCheckbox() {
         }
     }
 }
-// activityError.innerHTML = "Please select an Activity";
-//             activityError.style.color = "rgb(195, 17, 50)"; 
-//             activityError.style.fontWeight = "bold";
-//             activityErrorDiv.appendChild(activityError);
-//             activities.appendChild(activityTitle);
-//             e.preventDefault();
-
 formSubmitButton.addEventListener("click", e => {
     // If name field is empty or incorrect format, trigger error message
     if(nameInput.value == '' || /^[0-9]/.test(nameInput.value)) {
@@ -248,31 +250,133 @@ formSubmitButton.addEventListener("click", e => {
                 activityError.innerHTML = "Please select an Activity";
                 activityError.style.color = "rgb(195, 17, 50)"; 
                 activityError.style.fontWeight = "bold";
-                 activityErrorDiv.appendChild(activityError);
+                activityErrorDiv.appendChild(activityError);
                 activities.appendChild(activityTitle);
                 e.preventDefault();
                 return false;
             }
         }
     }
-    // Credit Card validation - Credit Card number, a Zip Code, and a 3 number CVV        
-    const validateCreditCard = "^([0-9]{13,16})$"
-    if (ccInput.value = validateCreditCard) {
-        console.log('cc valid');
-//     } else if (ccre.test(ccInput.value)) {
-//         ccInput.style.borderColor = 'red';
-//         console.log('cc invalid');
-//     }
-//     if (zipInput.value == "^([0-9]{5})$") {
-//         console.log('zip valid');
-//     } else {
-//         zipInput.style.borderColor = 'red';
-//         console.log('zip invalid');
-//     }
-//     if (cvvInput.pattern == "^([0-9]{5})$") {
-//         console.log('cvv valid');
-//     } else if (cvvInput.pattern !== "^([0-9]{5})$") {
-//         cvvInput.style.borderColor = 'red';
-//         console.log('cvv invalid');
+    // Have card validation only if the credit card payment option is selected
+    if (paymentDropdown.options[paymentDropdown.selectedIndex].value == 'credit card') {
+        const ccErrorMessage = document.createElement('p');
+        ccErrorMessage.className = 'Error';
+        const errorSelect = document.querySelector('.Error');
+        const creditCardErrorStyle = () => {
+            ccTitle.style.color = "rgb(195, 17, 50)";
+            ccInput.style.borderColor = "rgb(195, 17, 50)";
+            ccTitle.style.fontWeight = "bold";
+            ccErrorMessage.style.color = "rgb(195, 17, 50)";
+            ccErrorMessage.style.fontWeight = "bold";
+        }
+        // Credit Card conditional field validation - 3 conditions
+        if (/^([0-9]{13,16})$/.test(ccInput.value)) {
+            if(errorSelect) {
+                errorSelect.remove();
+            }
+            ccTitle.style.color = ""; 
+            ccTitle.style.fontWeight = ""; 
+            ccInput.style.borderColor = "";
+            console.log('cc valid');
+        } else if (ccInput.value == "") { // If credit card field is empty, show error
+            if(errorSelect) {
+                errorSelect.remove();
+            }
+            ccErrorMessage.innerHTML = 'Please enter a credit card number.';
+            creditCard.before(ccErrorMessage);
+            creditCardErrorStyle();
+            console.log('cc invalid');
+            e.preventDefault();
+        }
+        else if (/^[a-zA-Z]+$/.test(ccInput.value)) { // If credit card values entered are letters, throw error message
+            if(errorSelect) {
+                errorSelect.remove();
+            }
+            ccErrorMessage.innerHTML = 'Please enter numbers only for a credit card, no letters.';
+            creditCard.before(ccErrorMessage);
+            creditCardErrorStyle();
+            console.log('cc invalid');
+            e.preventDefault();
+        } 
+        else if (ccInput.value.length < 13 || ccInput.value.length > 16) { // If credit card field is not 13-16 digits, show error
+            if(errorSelect) {
+                errorSelect.remove();
+            }
+            ccErrorMessage.innerHTML = 'Credit card numbers should be between 13 and 16 digits long.';
+            creditCard.before(ccErrorMessage);
+            creditCardErrorStyle();
+            console.log('cc invalid');
+            e.preventDefault();
+        } 
+        // Zip Code field validation - must be 5 numbers, no letters
+        if (/^([0-9]{5})$/.test(zipInput.value)) {
+            zipTitle.style.color = ""; 
+            zipTitle.style.fontWeight = ""; 
+            zipInput.style.borderColor = "";
+            console.log('zip valid');
+        } else {
+            zipTitle.style.color = "rgb(195, 17, 50)";
+            zipInput.style.borderColor = "rgb(195, 17, 50)";
+            zipTitle.style.fontWeight = "bold"; 
+            console.log('zip invalid');
+            e.preventDefault();
+        }
+        // CVV field validation - must be 3 numbers, no letters
+        if (/^([0-9]{3})$/.test(cvvInput.value)) {
+            cvvTitle.style.color = ""; 
+            cvvTitle.style.fontWeight = ""; 
+            cvvInput.style.borderColor = "";
+            console.log('cvv valid');
+        } else {
+            cvvTitle.style.color = "rgb(195, 17, 50)";
+            cvvInput.style.borderColor = "rgb(195, 17, 50)";
+            cvvTitle.style.fontWeight = "bold"; 
+            console.log('cvv invalid');
+            e.preventDefault();
+        }
+    }
+})
+
+// Real-time Error Message for Name field - show error if non-letters
+let letters = /^[a-zA-Z '-]+$/;
+nameInput.addEventListener("keydown", () => {
+    if(nameInput.value.match(letters)) {
+        nameInput.style.borderColor = "";
+        nameInputTitle.innerHTML = "Name:";
+        nameInputTitle.style.color = ""; 
+        nameInputTitle.style.fontWeight = "";
+    } else {
+        nameInput.style.borderColor = "rgb(195, 17, 50)";
+        nameInputTitle.innerHTML = "Name: (Letters and apostrophes only please)";
+        nameInputTitle.style.color = "rgb(195, 17, 50)"; 
+        nameInputTitle.style.fontWeight = "bold"; 
+    }
+})
+
+// Real-time Error Message for Credit Card Field - show error if letters
+ccInput.addEventListener("keydown", () => {
+    const ccErrorMessage = document.createElement('p');
+    ccErrorMessage.className = 'Error';
+    const errorSelect = document.querySelector('.Error');
+    
+    if (ccInput.value.match(letters)) {
+
+        if(errorSelect) {
+            errorSelect.remove();
+        }
+        ccErrorMessage.innerHTML = 'Please enter numbers only for a credit card, no letters.';
+        creditCard.before(ccErrorMessage);
+        ccTitle.style.color = "rgb(195, 17, 50)";
+        ccInput.style.borderColor = "rgb(195, 17, 50)";
+        ccTitle.style.fontWeight = "bold";
+        ccErrorMessage.style.color = "rgb(195, 17, 50)";
+        ccErrorMessage.style.fontWeight = "bold";
+    } else {
+        if(errorSelect) {
+            errorSelect.remove();
+        }
+        ccTitle.style.color = ""; 
+        ccTitle.style.fontWeight = ""; 
+        ccInput.style.borderColor = "";
     }
 })
