@@ -48,21 +48,20 @@ shirtDesign.addEventListener('change', () => {
     // If the user selects "Theme - JS Puns" then the color menu should only display "Cornflower Blue," "Dark Slate Grey," and "Gold."
     if(shirtDesign.options[shirtDesign.selectedIndex].value === "Select Theme") {
         console.log('Started puns');
-        shirtColor.appendChild(colorPuns);
-        shirtColor.appendChild(colorHeart);
+        shirtColorDiv.style.display = "none";
     } 
     else if(shirtDesign.options[shirtDesign.selectedIndex].value === "js puns") {
         console.log('Started puns');
+        shirtColorDiv.style.display = "block";
         shirtColor.appendChild(colorPuns);
         shirtColor.removeChild(colorHeart);
-        shirtColorDiv.style.display = "block";
     } 
     // If the user selects "Theme - I ♥ JS" then the color menu should only display "Tomato," "Steel Blue," and "Dim Grey."
     else if (shirtDesign.options[shirtDesign.selectedIndex].value === "heart js") {
         console.log('Started heart');
+        shirtColorDiv.style.display = "block";
         shirtColor.appendChild(colorHeart);
         shirtColor.removeChild(colorPuns);
-        shirtColorDiv.style.display = "block";
     }
 })
 
@@ -161,6 +160,15 @@ const paymentDropdown = document.getElementById('payment');
 const paypal = document.getElementById('paypal');
 const bitcoin = document.getElementById('bitcoin');
 const creditCard = document.getElementById('credit-card');
+const ccErrorMessage = document.createElement('p');
+ccErrorMessage.className = 'ccError';
+const zipErrorMessage = document.createElement('p');
+zipErrorMessage.className = 'zipError';
+const cvvErrorMessage = document.createElement('p');
+cvvErrorMessage.className = 'cvvError';
+const ccErrorSelect = document.querySelector('.ccError');
+const zipErrorSelect = document.querySelector('.zipError');
+const cvvErrorSelect = document.querySelector('.cvvError');
 
 // hide PayPal and Bitcoin fields by default
 paypal.style.display = "none";
@@ -169,23 +177,62 @@ bitcoin.style.display = "none";
 paymentDropdown.options == 'credit card';
 
 paymentDropdown.addEventListener("change", () => {
+    const ccErrorSelect = document.querySelector('.ccError');
+    const zipErrorSelect = document.querySelector('.zipError');
+    const cvvErrorSelect = document.querySelector('.cvvError');
     // Show PayPal and hide other fields if PayPal is selected as payment option
     if (paymentDropdown.options[paymentDropdown.selectedIndex].value == 'paypal') {
         paypal.style.display = "block";
         bitcoin.style.display = "none";
         creditCard.style.display = "none";
+        if(ccErrorSelect) {
+            ccErrorSelect.remove();
+        }
+        if (zipErrorSelect) {
+            zipErrorSelect.remove();
+        }
+        if (cvvErrorSelect) {
+            cvvErrorSelect.remove();
+        }
     }
     // Show Bitcoin and hide other fields if Bitcoin is selected as payment option
    else if (paymentDropdown.options[paymentDropdown.selectedIndex].value == 'bitcoin') {
         bitcoin.style.display = "block";
         paypal.style.display = "none";
         creditCard.style.display = "none";
+        if(ccErrorSelect) {
+            ccErrorSelect.remove();
+        }
+        if (zipErrorSelect) {
+            zipErrorSelect.remove();
+        }
+        if (cvvErrorSelect) {
+            cvvErrorSelect.remove();
+        }
     }
     // Show Credit Card and hide other fields if Credit Card is selected as payment option
     else if (paymentDropdown.options[paymentDropdown.selectedIndex].value == 'credit card') {
         creditCard.style.display = "block";
         paypal.style.display = "none";
         bitcoin.style.display = "none";
+        if(ccErrorSelect) {
+            ccErrorSelect.remove();
+        }
+        if (zipErrorSelect) {
+            zipErrorSelect.remove();
+        }
+        if (cvvErrorSelect) {
+            cvvErrorSelect.remove();
+        }
+        ccTitle.style.color = ""; 
+        ccTitle.style.fontWeight = ""; 
+        ccInput.style.borderColor = "";
+        zipTitle.style.color = ""; 
+        zipTitle.style.fontWeight = ""; 
+        zipInput.style.borderColor = "";
+        cvvTitle.style.color = ""; 
+        cvvTitle.style.fontWeight = ""; 
+        cvvInput.style.borderColor = "";
     }
 })
 
@@ -262,18 +309,9 @@ formSubmitButton.addEventListener("click", e => {
         e.preventDefault();
         console.log('Activity invalid'); 
     }
-    const zipErrorMessage = document.createElement('p');
-    zipErrorMessage.className = 'zipError';
-    const cvvErrorMessage = document.createElement('p');
-    cvvErrorMessage.className = 'cvvError';
 
     // Have card validation only if the credit card payment option is selected
     if (paymentDropdown.options[paymentDropdown.selectedIndex].value == 'credit card') {
-        const ccErrorMessage = document.createElement('p');
-        ccErrorMessage.className = 'ccError';
-        const ccErrorSelect = document.querySelector('.ccError');
-        const zipErrorSelect = document.querySelector('.zipError');
-        const cvvErrorSelect = document.querySelector('.cvvError');
         const creditCardErrorStyle = () => {
             ccTitle.style.color = "rgb(195, 17, 50)";
             ccInput.style.borderColor = "rgb(195, 17, 50)";
@@ -333,11 +371,11 @@ formSubmitButton.addEventListener("click", e => {
             if(zipErrorSelect) {
                 zipErrorSelect.remove();
             }
-            zipErrorMessage.innerHTML += ' Zip code must be 5 digits.';
+            zipErrorMessage.innerHTML = ' Zip code must be 5 digits.';
+            creditCard.before(zipErrorMessage);
             zipTitle.style.color = "rgb(195, 17, 50)";
             zipInput.style.borderColor = "rgb(195, 17, 50)";
             zipTitle.style.fontWeight = "bold"; 
-            creditCard.before(zipErrorMessage);
             zipErrorMessage.style.color = "rgb(195, 17, 50)";
             zipErrorMessage.style.fontWeight = "bold";
             console.log('zip invalid');
@@ -356,11 +394,11 @@ formSubmitButton.addEventListener("click", e => {
             if(cvvErrorSelect) {
                 cvvErrorSelect.remove();
             }
-            cvvErrorMessage.innerHTML += ' CVV must be 3 digits.';
+            cvvErrorMessage.innerHTML = ' CVV must be 3 digits.';
+            creditCard.before(cvvErrorMessage);
             cvvTitle.style.color = "rgb(195, 17, 50)";
             cvvInput.style.borderColor = "rgb(195, 17, 50)";
             cvvTitle.style.fontWeight = "bold";
-            creditCard.before(cvvErrorMessage);
             cvvErrorMessage.style.color = "rgb(195, 17, 50)";
             cvvErrorMessage.style.fontWeight = "bold";
             console.log('cvv invalid');
@@ -403,7 +441,6 @@ ccInput.addEventListener("keyup", () => {
     ccErrorMessage.className = 'ccError';
     const ccErrorSelect = document.querySelector('.ccError');
     if (ccInput.value.match(ccLeters)) {
-
         if(ccErrorSelect) {
             ccErrorSelect.remove();
         }
